@@ -11,9 +11,9 @@
 </head>
 <body>
 <div id="app"></div>
+<!-- Mermaid -->
 <script src="//cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-<script type="module">
-    mermaid.initialize({ startOnLoad: true });
+<script>
     window.$docsify = {
         name: '',
         repo: '',
@@ -22,17 +22,34 @@
             renderer: {
                 code: function(code, lang) {
                     if (lang === "mermaid") {
-                        return (
-                            '<pre class="mermaid">' + code + "</pre>"
-                        );
+                        // 官方推荐用div而不是pre
+                        return '<div class="mermaid">' + code + '</div>';
                     }
                     return this.origin.code.apply(this, arguments);
                 }
             }
         }
+    };
+</script>
+<!-- Docsify -->
+<script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+<script>
+    // 等待页面渲染后，每次切换都手动初始化
+    window.addEventListener('DOMContentLoaded', function() {
+        // 每次内容变更后触发
+        window.addEventListener('hashchange', renderMermaid);
+        // Docsify 路由变更后
+        window.addEventListener('transitionend', renderMermaid);
+        // 初次渲染
+        renderMermaid();
+    });
+
+    function renderMermaid() {
+        if (window.mermaid) {
+            // Docsify 会渲染多次，这里每次都run，防止重复渲染可先清空mermaid缓存（可选）
+            mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+        }
     }
 </script>
-<!-- Docsify v4 -->
-<script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
 </body>
 </html>
